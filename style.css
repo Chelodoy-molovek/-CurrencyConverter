@@ -93,10 +93,11 @@ h1 {
     color: white;
 }
 
-.rightBorder:hover {
+
+/* .rightBorder:hover {
     background-color: #833AE0;
     color: white;
-}
+} */
 
 .scroll {
     margin-left: 3px;
