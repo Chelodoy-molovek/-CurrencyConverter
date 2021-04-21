@@ -13,16 +13,27 @@ let olo = document.querySelector('.olo');
 let val1 = 'RUB';
 let val2 = 'USD';
 
-async function updateRatesText() {
-    const val1ToVal2 = await fetch(`https://api.ratesapi.io/api/latest?base=${val1}&symbols=${val2}`);
-    const val1ToVal2Json = await val1ToVal2.json();
-    rates.innerText = `1 ${val1} = ${val1ToVal2Json.rates[val2].toFixed(4)} ${val2}`;
-
-    const val2ToVal1 = await fetch(`https://api.ratesapi.io/api/latest?base=${val2}&symbols=${val1}`);
-    const val2ToVal1Json = await val2ToVal1.json();
-    rates1.innerText = `1 ${val2} = ${val2ToVal1Json.rates[val1].toFixed(4)} ${val1}`;
+function updateRatesText() {
+    fetch(`https://api.ratesapi.io/api/latest?base=${val1}&symbols=${val2}`)
+        .then((response) => {
+            return response.json();
+        })
+        .then((data) => {
+            rates.innerText = `1 ${data.base} = ${data.rates[val2].toFixed(4)} ${val2}`;
+            fetch(`https://api.ratesapi.io/api/latest?base=${val2}&symbols=${val1}`)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((data) => {
+                    rates1.innerText = `1 ${val2} = ${data.rates[val1].toFixed(4)} ${val1}`;
+                })
+        })
 
 }
+
+
+
+
 
 rightBorder.addEventListener('change', (e) => {
     val1 = e.target.value;
