@@ -9,17 +9,61 @@ let letfborders = document.querySelector('.letfborders');
 let rates = document.querySelector('.rates');
 let rates1 = document.querySelector('.rates1');
 let olo = document.querySelector('.olo');
+let inpPutLeft = document.querySelector('.inpPutLeft');
+let inpPutRight = document.querySelector('.inpPutRight');
+let change = document.querySelector('.change');
+
+
+change.addEventListener('click', () => {
+
+    let c = rates.innerText;
+    let d = rates1.innerText;
+    rates.innerText = d;
+    rates1.innerText = c;
+
+})
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//               Подтягивание курсов валют с сервера и переключение валют по клику                        //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 let val1 = 'RUB';
 let val2 = 'USD';
-
+updateRatesText()
 async function updateRatesText() {
-    const val1ToVal2 = await fetch(`https://api.ratesapi.io/api/latest?base=${val1}&symbols=${val2}`);
-    const val1ToVal2Json = await val1ToVal2.json();
-    rates.innerText = `1 ${val1} = ${val1ToVal2Json.rates[val2].toFixed(4)} ${val2}`;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    if (val1 === val2) {
+        inpPutRight.oninput = (() => {
+            inpPutLeft.value = inpPutRight.value;
+        });
+        inpPutLeft.oninput = (() => {
+            inpPutRight.value = inpPutLeft.value;
+        });
+        rates.innerText = `1 ${val1} = 1.0000 ${val2}`;
+        rates1.innerText = rates.innerText;
+        inpPutRight.value = inpPutLeft.value
+            /////////////////////////////////////////////////////////////////////////////////////////////////////
+    } else {
+        const val1ToVal2 = await fetch(`https://api.ratesapi.io/api/latest?base=${val1}&symbols=${val2}`);
+        const val1ToVal2Json = await val1ToVal2.json();
+        rates.innerText = `1 ${val1} = ${val1ToVal2Json.rates[val2].toFixed(4)} ${val2}`;
+        const val2ToVal1 = await fetch(`https://api.ratesapi.io/api/latest?base=${val2}&symbols=${val1}`);
+        const val2ToVal1Json = await val2ToVal1.json();
+        rates1.innerText = `1 ${val2} = ${val2ToVal1Json.rates[val1].toFixed(4)} ${val1}`;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        let kurs = val1ToVal2Json.rates[val2].toFixed(4);
+        inpPutRight.value = kurs * inpPutLeft.value;
 
-    const val2ToVal1 = await fetch(`https://api.ratesapi.io/api/latest?base=${val2}&symbols=${val1}`);
-    const val2ToVal1Json = await val2ToVal1.json();
-    rates1.innerText = `1 ${val2} = ${val2ToVal1Json.rates[val1].toFixed(4)} ${val1}`;
+        inpPutLeft.oninput = (() => {
+            let kurs = val1ToVal2Json.rates[val2].toFixed(4);
+            inpPutRight.value = kurs * inpPutLeft.value; //                       конвертер                       //
+        });
+
+        inpPutRight.oninput = (() => {
+            let kurs = val2ToVal1Json.rates[val1].toFixed(4);
+            inpPutLeft.value = kurs * inpPutRight.value;
+        });
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
 }
 
 currenyLeft.querySelectorAll('button').forEach((item) => {
@@ -46,92 +90,9 @@ letfborders.addEventListener('change', (e1) => {
     updateRatesText();
 });
 
-
-
-
-
-
-
-// rightBorder.forEach((item) => {
-//     item.addEventListener('click', () => {
-//         currenyRight.querySelectorAll('button').forEach((item) => {
-//             item.style.backgroundColor = 'white';
-//             item.style.color = '#9F9F9F';
-//         });
-//         item.style.backgroundColor = '#833AE0';
-//         item.style.color = 'white';
-//     })
-// })
-
-
-
-// letfborders.addEventListener('change', (e1) => {
-//     fetch(`https://api.ratesapi.io/api/latest?base=${e1.target.value}`)
-//         .then((response) => {
-//             return response.json();
-//         })
-//         .then((data) => {
-//             val2 = data.base;
-//         })
-// });
-
-// fetch(`https://api.ratesapi.io/api/latest?base=${val1}&symbols=${val2}`)
-//     .then((response) => {
-//         return response.json();
-//     })
-//     .then((data) => {
-//         console.log(data);
-//     })
-
-
-
-
-
-
-
-
-
-
-
-fetch('https://api.ratesapi.io/api/latest?base')
-    .then((response) => {
-        return response.json();
-    })
-    .then((data) => {
-        let a = Object.keys(data.rates);
-        a.forEach(cName => {
-            currenciesButton.forEach(item => {
-                let b = document.createElement('option');
-                b.textContent = cName;
-                item.append(b);
-            })
-        })
-    });
-
-
-// currenyLeft.querySelectorAll('button').forEach((item) => {
-//     item.addEventListener('click', () => {
-//         currenyLeft.querySelectorAll('button').forEach((item) => {
-//             item.style.backgroundColor = 'white';
-//             item.style.color = '#9F9F9F';
-//         });
-//         item.style.backgroundColor = '#833AE0';
-//         item.style.color = 'white';
-//     })
-// })
-
-// currenyRight.querySelectorAll('button').forEach((item) => {
-//     item.addEventListener('click', () => {
-//         currenyRight.querySelectorAll('button').forEach((item) => {
-//             item.style.backgroundColor = 'white';
-//             item.style.color = '#9F9F9F';
-//         });
-//         item.style.backgroundColor = '#833AE0';
-//         item.style.color = 'white';
-//     })
-// })
-currenyStyle(currenyRight);
-currenyStyle(currenyLeft);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                Красим и переключаем кнопки                                             //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function currenyStyle(targetObject) {
     targetObject.querySelectorAll('button').forEach((item) => {
@@ -161,16 +122,26 @@ currenciesButton.forEach((item) => {
     })
 })
 
+currenyStyle(currenyRight);
+currenyStyle(currenyLeft);
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                              Подтягиваем все валюты в наш скролл                                       //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-// letfborders.addEventListener('change', (e) => {
-//     e.target.style.backgroundColor = '#833AE0';
-//     e.target.style.color = 'white';
-// });
-
-
-// rightBorder.addEventListener('change', (e) => {
-//     e.target.style.backgroundColor = '#833AE0';
-//     e.target.style.color = 'white';
-// });
+fetch('https://api.ratesapi.io/api/latest?base')
+    .then((response) => {
+        return response.json();
+    })
+    .then((data) => {
+        let a = Object.keys(data.rates);
+        a.forEach(cName => {
+            currenciesButton.forEach(item => {
+                if (cName !== 'RUB' && cName !== 'EUR' && cName !== 'GBP' && cName !== 'USD') {
+                    let b = document.createElement('option');
+                    b.textContent = cName;
+                    item.append(b);
+                }
+            })
+        })
+    });
