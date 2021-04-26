@@ -16,6 +16,7 @@ let val1 = 'RUB';
 let val2 = 'USD';
 let kurs;
 let kurs1;
+let isReverse = false;
 updateRatesText()
 currenyStyle(currenyRight);
 currenyStyle(currenyLeft);
@@ -39,6 +40,7 @@ async function updateRatesText() {
     } else {
         const val1ToVal2 = await fetch(`https://api.ratesapi.io/api/latest?base=${val1}&symbols=${val2}`);
         const val1ToVal2Json = await val1ToVal2.json();
+        console.log(val1ToVal2Json)
         kurs = val1ToVal2Json.rates[val2].toFixed(4);
         rates.innerText = `1 ${val1} = ${kurs} ${val2}`;
 
@@ -49,27 +51,37 @@ async function updateRatesText() {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         inpPutRight.value = kurs * inpPutLeft.value; //по клику
         inpPutLeft.oninput = (() => { //по изменениям в левом инпуте
-            inpPutRight.value = kurs * inpPutLeft.value; //                       конвертер                       //
+            inpPutRight.value = (kurs * inpPutLeft.value).toFixed(4); //                       конвертер                       //
         });
         inpPutRight.oninput = (() => { //по изменениям в правом инпуте
-            inpPutLeft.value = kurs1 * inpPutRight.value;
+            inpPutLeft.value = (kurs1 * inpPutRight.value).toFixed(4);
         });
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 }
 
-let isReverse = false;
+function slam(selection, num) {
+    selection.querySelectorAll('button').forEach((item) => {
+        item.style.backgroundColor = 'white';
+        item.style.color = '#9F9F9F';
+        if (item.innerText === num) {
+            item.style.backgroundColor = '#833AE0';
+            item.style.color = 'white';
+        }
+    })
+}
 
 change.addEventListener('click', () => {
-    //перекрасить все вбелое
-    //пройтись по левым кнопкам
-
 
     if (inpPutRight.value !== inpPutLeft.value) {
         if (isReverse) {
             inpPutRight.value = kurs * inpPutLeft.value;
+            slam(currenyLeft, val1);
+            slam(currenyRight, val2);
         } else {
             inpPutRight.value = kurs1 * inpPutLeft.value;
+            slam(currenyLeft, val2);
+            slam(currenyRight, val1);
         }
         isReverse = !isReverse;
         let a = rates.innerText;
@@ -78,8 +90,6 @@ change.addEventListener('click', () => {
         rates1.innerText = a;
     }
 })
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////
 currenyLeft.querySelectorAll('button').forEach((item) => {
@@ -138,35 +148,6 @@ currenciesButton.forEach((item) => {
         });
     })
 })
-
-// change.addEventListener('click', () => {
-//     currenyLeft.querySelectorAll('button').forEach((item) => {
-//         var style = window.getComputedStyle(item, null);
-//         if (style.backgroundColor === 'rgb(131, 58, 224)') {
-//             console.log('slam');
-//         }
-//     })
-//     currenyRight.querySelectorAll('button').forEach((item) => {
-//         if (item.style.color === 'white') {
-//             console.log('slam');
-//         }
-//     })
-
-// let c = rates.innerText;
-// let d = rates1.innerText;
-// rates.innerText = d;
-// rates1.innerText = c;
-
-// })
-
-
-
-
-
-
-
-
-
 
 
 
