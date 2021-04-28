@@ -12,6 +12,7 @@ let olo = document.querySelector('.olo');
 let inpPutLeft = document.querySelector('.inpPutLeft');
 let inpPutRight = document.querySelector('.inpPutRight');
 let change = document.querySelector('.change');
+let loadingWindow = document.querySelector('.loadingWindow')
 let val1 = 'RUB';
 let val2 = 'USD';
 let kurs;
@@ -27,40 +28,49 @@ currenyStyle(currenyLeft);
 
 
 async function updateRatesText() {
-    if (val1 === val2) {
-        inpPutRight.oninput = (() => {
-            inpPutLeft.value = inpPutRight.value;
-        });
-        inpPutLeft.oninput = (() => {
-            inpPutRight.value = inpPutLeft.value;
-        });
-        rates.innerText = `1 ${val1} = 1.0000 ${val2}`;
-        rates1.innerText = rates.innerText;
-        inpPutRight.value = inpPutLeft.value
-    } else {
-        const val1ToVal2 = await fetch(`https://api.ratesapi.io/api/latest?base=${val1}&symbols=${val2}`);
-        const val1ToVal2Json = await val1ToVal2.json();
-        console.log(val1ToVal2Json)
-        kurs = val1ToVal2Json.rates[val2].toFixed(4);
-        rates.innerText = `1 ${val1} = ${kurs} ${val2}`;
+    try {
+        if (val1 === val2) {
+            inpPutRight.oninput = (() => {
+                inpPutLeft.value = inpPutRight.value;
+            });
+            inpPutLeft.oninput = (() => {
+                inpPutRight.value = inpPutLeft.value;
+            });
+            rates.innerText = `1 ${val1} = 1.0000 ${val2}`;
+            rates1.innerText = rates.innerText;
+            inpPutRight.value = inpPutLeft.value
+        } else {
+            let id = setTimeout(() => {
+                loadingWindow.style.display = 'block'
+            }, 500);
+            const val1ToVal2 = await fetch(`https://api.ratesapi.io/api/latest?base=${val1}&symbols=${val2}`);
+            const val1ToVal2Json = await val1ToVal2.json();
 
-        const val2ToVal1 = await fetch(`https://api.ratesapi.io/api/latest?base=${val2}&symbols=${val1}`);
-        const val2ToVal1Json = await val2ToVal1.json();
-        kurs1 = val2ToVal1Json.rates[val1].toFixed(4);
-        rates1.innerText = `1 ${val2} = ${kurs1} ${val1}`;
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        inpPutRight.value = kurs * inpPutLeft.value; //по клику
-        inpPutLeft.oninput = (() => { //по изменениям в левом инпуте
-            inpPutRight.value = (kurs * inpPutLeft.value).toFixed(4); //                       конвертер                       //
-        });
-        inpPutRight.oninput = (() => { //по изменениям в правом инпуте
-            inpPutLeft.value = (kurs1 * inpPutRight.value).toFixed(4);
-        });
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            kurs = val1ToVal2Json.rates[val2];
+            rates.innerText = `1 ${val1} = ${kurs} ${val2}`;
+
+            const val2ToVal1 = await fetch(`https://api.ratesapi.io/api/latest?base=${val2}&symbols=${val1}`);
+            const val2ToVal1Json = await val2ToVal1.json();
+            kurs1 = val2ToVal1Json.rates[val1].toFixed(4);
+            rates1.innerText = `1 ${val2} = ${kurs1} ${val1}`;
+            clearTimeout(id);
+            loadingWindow.style.display = 'none'
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            inpPutRight.value = (kurs * inpPutLeft.value).toFixed(4); //по клику
+            inpPutLeft.oninput = (() => { //по изменениям в левом инпуте
+                inpPutRight.value = (kurs * inpPutLeft.value).toFixed(4); //                 конвертер                  //
+            });
+            inpPutRight.oninput = (() => { //по изменениям в правом инпуте
+                inpPutLeft.value = (kurs1 * inpPutRight.value).toFixed(4);
+            });
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
+    } catch (err) {
+        console.log(err);
     }
 }
 
-function slam(selection, num) {
+function reverseButton(selection, num) {
     selection.querySelectorAll('button').forEach((item) => {
         item.style.backgroundColor = 'white';
         item.style.color = '#9F9F9F';
@@ -69,23 +79,42 @@ function slam(selection, num) {
             item.style.color = 'white';
         }
     })
+    selection.querySelectorAll('select').forEach((item) => {
+        item.style.backgroundColor = 'white';
+        item.style.color = '#9F9F9F';
+        if (item.value === num) {
+            item.value = num;
+            item.style.backgroundColor = '#833AE0';
+            item.style.color = 'white';
+        }
+    })
 }
 
 change.addEventListener('click', () => {
+    let a = rates.innerText;
+    let b = rates1.innerText;
+    let rev1 = val1;
+    let rev2 = val2;
+    if ((val1 !== 'RUB' && val1 !== 'EUR' && val1 !== 'GBP' && val1 !== 'USD') || (val2 !== 'RUB' && val2 !== 'EUR' && val2 !== 'GBP' && val2 !== 'USD')) {
+        currenyLeft.querySelector('select').value = val2
+        currenyRight.querySelector('select').value = val1
+    }
 
     if (inpPutRight.value !== inpPutLeft.value) {
         if (isReverse) {
-            inpPutRight.value = kurs * inpPutLeft.value;
-            slam(currenyLeft, val1);
-            slam(currenyRight, val2);
+            inpPutRight.value = (kurs * inpPutLeft.value).toFixed(4);
+            reverseButton(currenyLeft, val2);
+            reverseButton(currenyRight, val1);
+            val1 = rev2;
+            val2 = rev1;
         } else {
-            inpPutRight.value = kurs1 * inpPutLeft.value;
-            slam(currenyLeft, val2);
-            slam(currenyRight, val1);
+            inpPutRight.value = (kurs1 * inpPutLeft.value).toFixed(4);
+            reverseButton(currenyLeft, val2);
+            reverseButton(currenyRight, val1);
+            val1 = rev2;
+            val2 = rev1;
         }
         isReverse = !isReverse;
-        let a = rates.innerText;
-        let b = rates1.innerText;
         rates.innerText = b;
         rates1.innerText = a;
     }

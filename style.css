@@ -93,12 +93,6 @@ h1 {
     color: white;
 }
 
-
-/* .rightBorder:hover {
-    background-color: #833AE0;
-    color: white;
-} */
-
 .scroll {
     margin-left: 3px;
     margin-top: -3px;
@@ -120,6 +114,10 @@ h1 {
     outline: none;
 }
 
+.menu {
+    color: #9F9F9F;
+}
+
 .menu:hover {
     color: rebeccapurple;
 }
@@ -133,4 +131,36 @@ h1 {
 .one {
     background-color: #833AE0;
     color: white;
+}
+
+.button-color {
+    background-color: 'white';
+    color: '#9F9F9F';
+}
+
+.bank {
+    color: black;
+}
+
+.wrapperLoading {
+    position: relative;
+}
+
+.loadingWindow {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.44);
+    display: none;
+}
+
+.load {
+    margin: 25% auto;
+    text-align: center;
+    box-sizing: border-box;
+    padding-top: 15px;
+    width: 129px;
+    height: 54px;
+    background: #FFFFFF;
+    border-radius: 3px;
 }
