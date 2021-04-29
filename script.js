@@ -8,7 +8,6 @@ let rightBorder = document.querySelector('.rightBorder');
 let letfborders = document.querySelector('.letfborders');
 let rates = document.querySelector('.rates');
 let rates1 = document.querySelector('.rates1');
-let olo = document.querySelector('.olo');
 let inpPutLeft = document.querySelector('.inpPutLeft');
 let inpPutRight = document.querySelector('.inpPutRight');
 let change = document.querySelector('.change');
@@ -25,8 +24,6 @@ currenyStyle(currenyLeft);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //               Подтягивание курсов валют с сервера и переключение валют по клику                        //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 async function updateRatesText() {
     try {
         if (val1 === val2) {
@@ -166,7 +163,6 @@ function currenyStyle(targetObject) {
     })
 }
 
-
 currenciesButton.forEach((item) => {
     item.addEventListener('change', () => {
         item.style.backgroundColor = '#833AE0';
@@ -177,8 +173,6 @@ currenciesButton.forEach((item) => {
         });
     })
 })
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                              Подтягиваем все валюты в наш скролл                                       //
