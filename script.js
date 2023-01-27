@@ -37,9 +37,9 @@ async function updateRatesText() {
             rates1.innerText = rates.innerText;
             inpPutRight.value = inpPutLeft.value
         } else {
-            let id = setTimeout(() => {
-                loadingWindow.style.display = 'block'
-            }, 500);
+            // let id = setTimeout(() => {
+            //     loadingWindow.style.display = 'block'
+            // }, 500);
             const val1ToVal2 = await fetch(`https://api.ratesapi.io/api/latest?base=${val1}&symbols=${val2}`);
             const val1ToVal2Json = await val1ToVal2.json();
 
@@ -51,7 +51,7 @@ async function updateRatesText() {
             kurs1 = val2ToVal1Json.rates[val1].toFixed(4);
             rates1.innerText = `1 ${val2} = ${kurs1} ${val1}`;
             clearTimeout(id);
-            loadingWindow.style.display = 'none'
+            // loadingWindow.style.display = 'none'
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
             inpPutRight.value = (kurs * inpPutLeft.value).toFixed(4); //по клику
             inpPutLeft.oninput = (() => { //по изменениям в левом инпуте

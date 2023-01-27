@@ -146,13 +146,13 @@ h1 {
     position: relative;
 }
 
-.loadingWindow {
+/* .loadingWindow {
     position: absolute;
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.44);
     display: none;
-}
+} */
 
 .load {
     margin: 25% auto;
